@@ -43,15 +43,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         sceneView.autoenablesDefaultLighting = true
         
-//        // Create a dice scene floating in the air
-//        let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
-//
-//        if let diceNode = diceScene.rootNode.childNode(withName: "Dice", recursively: true) {
-//
-//            diceNode.position = SCNVector3(x : 0, y : 0, z : -0.1)
-//
-//            sceneView.scene.rootNode.addChildNode(diceNode)
-//        }
         
         
         
@@ -74,6 +65,32 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Pause the view's session
         sceneView.session.pause()
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let touchLocation = touch.location(in: sceneView)
+            
+            //convert 2d screen touch event int 3d on our plane
+            let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
+            
+            if let hitResult = results.first {
+        
+                // Create new scene
+                let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
+        
+                if let diceNode = diceScene.rootNode.childNode(withName: "Dice", recursively: true) {
+        
+                    diceNode.position = SCNVector3(
+                        x : hitResult.worldTransform.columns.3.x,
+                        y : hitResult.worldTransform.columns.3.y,
+                        z : hitResult.worldTransform.columns.3.z)
+        
+                    sceneView.scene.rootNode.addChildNode(diceNode)
+                }
+            }
+            
+        }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
